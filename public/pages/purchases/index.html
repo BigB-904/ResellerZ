@@ -4,120 +4,279 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
+    <title>
 
-ResellerZ | Purchases
+        ResellerZ | Purchases
 
-</title>
+    </title>
 
-<link
-rel="stylesheet"
-href="/css/base/global.css">
+    <link rel="stylesheet" href="/css/base/global.css">
 
-<link
-rel="stylesheet"
-href="/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/dashboard.css">
 
-<link
-rel="stylesheet"
-href="/css/pages/purchases.css">
+    <link rel="stylesheet" href="/css/pages/purchases.css">
 
-<link
-rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
 </head>
 
 <body>
 
-<div class="dashboard">
+    <div class="dashboard">
 
-    <div
-    id="sidebarContainer">
+        <!-- Sidebar -->
+
+        <aside class="sidebar">
+
+            <div class="logo">
+
+                ResellerZ
+
+            </div>
+
+            <nav>
+
+                <a href="/pages/dashboard/index.html">
+
+                    Dashboard
+
+                </a>
+
+                <a href="/pages/customers/index.html">
+
+                    Customers
+
+                </a>
+
+                <a href="/pages/products/index.html">
+
+                    Products
+
+                </a>
+
+                <a href="/pages/suppliers/index.html">
+
+                    Suppliers
+
+                </a>
+
+                <a href="/pages/inventory/index.html">
+
+                    Inventory
+
+                </a>
+
+                <a class="active" href="/pages/purchases/index.html">
+
+                    Purchases
+
+                </a>
+
+                <a href="/pages/sales/index.html">
+
+                    Sales
+
+                </a>
+
+                <a href="/pages/invoices/index.html">
+
+                    Invoices
+
+                </a>
+
+                <a>
+
+                    Reports
+
+                </a>
+
+                <a>
+
+                    Users
+
+                </a>
+
+                <a>
+
+                    Settings
+
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Main -->
+
+        <main class="content">
+
+            <header class="topbar">
+
+                <h2>
+
+                    Purchases
+
+                </h2>
+
+                <button class="btn btn-primary" onclick="logout()">
+
+                    Logout
+
+                </button>
+
+            </header>
+
+            <!-- Statistics -->
+
+            <section class="cards">
+
+                <div class="card">
+
+                    <h3>
+
+                        Total Purchases
+
+                    </h3>
+
+                    <h1 id="totalPurchases">
+
+                        0
+
+                    </h1>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>
+
+                        Today's Purchases
+
+                    </h3>
+
+                    <h1 id="todayPurchases">
+
+                        0
+
+                    </h1>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>
+
+                        Purchase Amount
+
+                    </h3>
+
+                    <h1 id="purchaseAmount">
+
+                        ₨ 0.00
+
+                    </h1>
+
+                </div>
+
+            </section>
+
+            <!-- Purchase List -->
+
+            <section class="card" style="margin-top:30px;">
+
+                <div class="toolbar">
+
+                    <input id="searchBox" class="input" placeholder="Search purchase...">
+
+                    <button id="newPurchaseButton" class="btn btn-primary">
+
+                        New Purchase
+
+                    </button>
+
+                </div>
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Date</th>
+
+                            <th>Supplier</th>
+
+                            <th>Total</th>
+
+                            <th>Notes</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="purchaseTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+        </main>
 
     </div>
 
-    <main class="content">
+    <!-- Purchase Modal -->
 
-        <div
-        id="topbarContainer">
+    <div id="purchaseModal" class="modal">
 
-        </div>
+        <div class="modal-content" style="width:1000px;max-width:95%;">
 
-        <section class="cards">
+            <h2>
 
-            <div class="card">
+                New Purchase
 
-                <h3>
+            </h2>
 
-                    Total Purchases
+            <label>
 
-                </h3>
+                Supplier
 
-                <h1 id="totalPurchases">
+            </label>
 
-                    0
+            <select id="supplierSelect" class="input">
 
-                </h1>
+                <option value="">
 
-            </div>
+                    Select Supplier
 
-            <div class="card">
+                </option>
 
-                <h3>
+            </select>
 
-                    Today's Purchases
+            <label>
 
-                </h3>
+                Notes
 
-                <h1 id="todayPurchases">
+            </label>
 
-                    0
+            <textarea id="purchaseNotes" class="input">
 
-                </h1>
+</textarea>
 
-            </div>
-
-            <div class="card">
-
-                <h3>
-
-                    Purchase Amount
-
-                </h3>
-
-                <h1 id="purchaseAmount">
-
-                    ₨ 0
-
-                </h1>
-
-            </div>
-
-        </section>
-
-        <section
-        class="card"
-        style="margin-top:30px;">
+            <hr>
 
             <div class="toolbar">
 
-                <input
-                id="searchBox"
-                class="input"
-                placeholder="Search Purchase...">
+                <button id="addItemButton" class="btn btn-primary">
 
-                <button
-                id="newPurchaseButton"
-                class="btn btn-primary">
-
-                    New Purchase
+                    Add Item
 
                 </button>
 
@@ -129,48 +288,221 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 
                     <tr>
 
-                        <th>ID</th>
+                        <th style="width:35%;">
 
-                        <th>Date</th>
+                            Product
 
-                        <th>Supplier</th>
+                        </th>
 
-                        <th>Total</th>
+                        <th>
 
-                        <th>Actions</th>
+                            Quantity
+
+                        </th>
+
+                        <th>
+
+                            Purchase Price
+
+                        </th>
+
+                        <th>
+
+                            Total
+
+                        </th>
+
+                        <th>
+
+                            Action
+
+                        </th>
 
                     </tr>
 
                 </thead>
 
-                <tbody
-                id="purchaseTableBody">
+                <tbody id="purchaseItemsBody">
 
                 </tbody>
 
             </table>
 
-        </section>
+            <div class="purchase-total">
 
-    </main>
+                <h2>
 
-</div>
+                    Grand Total :
 
-<div id="modalContainer"></div>
+                    <span id="grandTotal">
 
-<script src="/js/api.js"></script>
+                        ₨ 0.00
 
-<script src="/js/auth.js"></script>
+                    </span>
 
-<script src="/js/components.js"></script>
+                </h2>
 
-<script>
+            </div>
 
-initializePurchasePage();
+            <div class="modal-buttons">
 
-</script>
+                <button id="savePurchaseButton" class="btn btn-primary">
 
-<script src="/js/pages/purchases.js"></script>
+                    Save Purchase
+
+                </button>
+
+                <button id="closePurchaseModal" class="btn">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    View Purchase Modal
+
+    <div id="viewPurchaseModal" class="modal">
+
+        <div class="modal-content" style="width:1000px;max-width:95%;">
+
+            <h2>
+
+                Purchase Details
+
+            </h2>
+
+            <div class="purchase-details">
+
+                <p>
+
+                    <strong>Purchase ID :</strong>
+
+                    <span id="viewPurchaseId">
+
+                    </span>
+
+                </p>
+
+                <p>
+
+                    <strong>Date :</strong>
+
+                    <span id="viewPurchaseDate">
+
+                    </span>
+
+                </p>
+
+                <p>
+
+                    <strong>Supplier :</strong>
+
+                    <span id="viewSupplierName">
+
+                    </span>
+
+                </p>
+
+                <p>
+
+                    <strong>Notes :</strong>
+
+                    <span id="viewPurchaseNotes">
+
+                    </span>
+
+                </p>
+
+            </div>
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+
+                            Product
+
+                        </th>
+
+                        <th>
+
+                            Quantity
+
+                        </th>
+
+                        <th>
+
+                            Purchase Price
+
+                        </th>
+
+                        <th>
+
+                            Total
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="purchaseDetailsBody">
+
+                </tbody>
+
+            </table>
+
+            <div class="purchase-total">
+
+                <h2>
+
+                    Total :
+
+                    <span id="viewGrandTotal">
+
+                        ₨ 0.00
+
+                    </span>
+
+                </h2>
+                <button
+                id="printPurchaseButton"
+                class="btn btn-primary">
+            
+                    Print
+            
+                </button>
+
+            </div>
+
+            <div class="modal-buttons">
+
+                <button id="closeViewPurchaseModal" class="btn">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div id="viewPurchaseContainer"></div>
+
+    <script src="/js/api.js"></script>
+
+    <script src="/js/auth.js"></script>
+
+    <script src="/js/pages/purchases.js"></script>
 
 </body>
 

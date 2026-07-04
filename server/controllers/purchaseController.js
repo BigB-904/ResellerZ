@@ -52,8 +52,35 @@ async function createPurchase(req,res)
     }
 }
 
+async function getPurchaseDetails(req,res)
+{
+    try
+    {
+        const data =
+        await purchaseService.getPurchaseDetails(
+        req.params.id);
+
+        res.json(
+        {
+            success:true,
+            data:data
+        });
+    }
+    catch(error)
+    {
+        console.error(error);
+
+        res.status(500).json(
+        {
+            success:false,
+            message:"Server Error"
+        });
+    }
+}
+
 module.exports =
 {
     getPurchases,
-    createPurchase
+    createPurchase,
+    getPurchaseDetails
 };

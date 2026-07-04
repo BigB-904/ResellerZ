@@ -345,3 +345,4 @@ CREATE TABLE Invoices
 
     FOREIGN KEY (SaleID) REFERENCES Sales(SaleID)
 );
+

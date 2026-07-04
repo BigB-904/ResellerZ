@@ -130,8 +130,50 @@ async function getPurchases()
     return result.recordset;
 }
 
+async function getPurchaseDetails(purchaseId)
+{
+    const request =
+    new sql.Request();
+
+    request.input(
+    "PurchaseID",
+    sql.Int,
+    purchaseId);
+
+    const result =
+    await request.query(`
+        SELECT
+
+            pi.PurchaseItemID,
+
+            p.ProductName,
+
+            p.SKU,
+
+            pi.Quantity,
+
+            pi.PurchasePrice,
+
+            (pi.Quantity * pi.PurchasePrice)
+            AS Total
+
+        FROM PurchaseItems pi
+
+        INNER JOIN Products p
+
+        ON pi.ProductID=p.ProductID
+
+        WHERE pi.PurchaseID=@PurchaseID
+
+        ORDER BY p.ProductName
+    `);
+
+    return result.recordset;
+}
+
 module.exports =
 {
     getPurchases,
-    createPurchase
+    createPurchase,
+    getPurchaseDetails
 };

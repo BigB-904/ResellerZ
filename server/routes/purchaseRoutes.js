@@ -11,6 +11,10 @@ router.get(
 "/",
 purchaseController.getPurchases);
 
+router.get(
+"/:id",
+purchaseController.getPurchaseDetails);
+
 router.post(
 "/",
 purchaseController.createPurchase);

@@ -1,46 +1,4 @@
-// ==============================
-// DOM ELEMENTS
-// ==============================
-
-const purchaseTableBody =
-document.getElementById("purchaseTableBody");
-
-const supplierSelect =
-document.getElementById("supplierSelect");
-
-const productSelect =
-document.getElementById("productSelect");
-
-const quantityInput =
-document.getElementById("quantity");
-
-const purchasePriceInput =
-document.getElementById("purchasePrice");
-
-const purchaseNotes =
-document.getElementById("purchaseNotes");
-
-const purchaseModal =
-document.getElementById("purchaseModal");
-
-const purchaseItemsBody =
-document.getElementById("purchaseItemsBody");
-
-const grandTotal =
-document.getElementById("grandTotal");
-
-const searchBox =
-document.getElementById("searchBox");
-
-const newPurchaseButton =
-document.getElementById("newPurchaseButton");
-
-const closePurchaseModal =
-document.getElementById("closePurchaseModal");
-
-// ==============================
-// GLOBAL DATA
-// ==============================
+let purchases = [];
 
 let suppliers = [];
 
@@ -48,11 +6,70 @@ let products = [];
 
 let purchaseItems = [];
 
-let purchases = [];
+/* ---------------- Page Load ---------------- */
 
-// ==============================
-// LOAD PURCHASE HISTORY
-// ==============================
+document.addEventListener(
+"DOMContentLoaded",
+async function()
+{
+    registerEvents();
+
+    await loadSuppliers();
+
+    await loadProducts();
+
+    await loadPurchases();
+
+    updateStatistics();
+});
+
+/* ---------------- Events ---------------- */
+
+function registerEvents()
+{
+    document
+    .getElementById("newPurchaseButton")
+    .addEventListener(
+    "click",
+    openPurchaseModal);
+
+    document
+    .getElementById("closePurchaseModal")
+    .addEventListener(
+    "click",
+    closePurchaseModal);
+
+    document
+    .getElementById("searchBox")
+    .addEventListener(
+    "input",
+    searchPurchases);
+
+    document
+    .getElementById("addItemButton")
+    .addEventListener(
+    "click",
+    addItemRow);
+
+    document
+    .getElementById("savePurchaseButton")
+    .addEventListener(
+    "click",
+    savePurchase);
+
+    document
+    .getElementById("closeViewPurchaseModal")
+    .addEventListener(
+    "click",
+    function()
+    {
+        document
+        .getElementById("viewPurchaseModal")
+        .style.display = "none";
+    });
+}
+
+/* ---------------- Purchases ---------------- */
 
 async function loadPurchases()
 {
@@ -66,63 +83,24 @@ async function loadPurchases()
 
         if(result.success)
         {
-            purchases = result.data;
+            purchases =
+            result.data;
 
-            renderPurchases(result.data);
+            renderPurchases(
+            purchases);
+
+            updateStatistics();
         }
     }
     catch(error)
     {
         console.error(error);
+
+        alert("Unable to load purchases.");
     }
 }
 
-// ==============================
-// RENDER PURCHASE TABLE
-// ==============================
-
-function renderPurchases(data)
-{
-    purchaseTableBody.innerHTML = "";
-
-    data.forEach(function(purchase)
-    {
-        purchaseTableBody.innerHTML +=
-        `
-        <tr>
-
-            <td>${purchase.PurchaseID}</td>
-
-            <td>
-                ${new Date(purchase.PurchaseDate).toLocaleDateString()}
-            </td>
-
-            <td>
-                ${purchase.SupplierName}
-            </td>
-
-            <td>
-                ₨ ${purchase.TotalAmount}
-            </td>
-
-            <td>
-
-                <button class="btn">
-
-                    View
-
-                </button>
-
-            </td>
-
-        </tr>
-        `;
-    });
-}
-
-// ==============================
-// LOAD SUPPLIERS
-// ==============================
+/* ---------------- Suppliers ---------------- */
 
 async function loadSuppliers()
 {
@@ -136,22 +114,8 @@ async function loadSuppliers()
 
         if(result.success)
         {
-            suppliers = result.data;
-
-            supplierSelect.innerHTML = "";
-
-            suppliers.forEach(function(supplier)
-            {
-                supplierSelect.innerHTML +=
-                `
-                <option
-                value="${supplier.SupplierID}">
-
-                    ${supplier.CompanyName}
-
-                </option>
-                `;
-            });
+            suppliers =
+            result.data;
         }
     }
     catch(error)
@@ -160,9 +124,7 @@ async function loadSuppliers()
     }
 }
 
-// ==============================
-// LOAD PRODUCTS
-// ==============================
+/* ---------------- Products ---------------- */
 
 async function loadProducts()
 {
@@ -176,22 +138,8 @@ async function loadProducts()
 
         if(result.success)
         {
-            products = result.data;
-
-            productSelect.innerHTML = "";
-
-            products.forEach(function(product)
-            {
-                productSelect.innerHTML +=
-                `
-                <option
-                value="${product.ProductID}">
-
-                    ${product.ProductName}
-
-                </option>
-                `;
-            });
+            products =
+            result.data;
         }
     }
     catch(error)
@@ -200,61 +148,598 @@ async function loadProducts()
     }
 }
 
-// ==============================
-// SEARCH
-// ==============================
+/* ---------------- Render Purchase List ---------------- */
 
-searchBox.addEventListener(
-"keyup",
-function()
+function renderPurchases(data)
 {
-    const value =
-    searchBox.value.toLowerCase();
+    const tbody =
+    document.getElementById(
+    "purchaseTableBody");
 
-    const filtered =
-    purchases.filter(function(item)
+    tbody.innerHTML = "";
+
+    data.forEach(purchase =>
     {
-        return (
-            item.SupplierName
-            .toLowerCase()
-            .includes(value)
-        );
+        tbody.innerHTML +=
+        `
+        <tr>
+
+            <td>${purchase.PurchaseID}</td>
+
+            <td>
+            ${
+                new Date(
+                purchase.PurchaseDate)
+                .toLocaleDateString()
+            }
+            </td>
+
+            <td>${purchase.SupplierName}</td>
+
+            <td>
+            ₨ ${Number(
+            purchase.TotalAmount).toFixed(2)}
+            </td>
+
+            <td>
+
+                <button
+                class="btn btn-primary"
+                onclick="viewPurchase(${purchase.PurchaseID})">
+
+                    View
+
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+    });
+}
+
+async function viewPurchase(purchaseId)
+{
+    try
+    {
+        const response =
+        await fetch(
+        "/api/purchases/" +
+        purchaseId);
+
+        const result =
+        await response.json();
+
+        if(!result.success)
+        {
+            alert(result.message);
+
+            return;
+        }
+
+        const tbody =
+        document.getElementById(
+        "purchaseDetailsBody");
+
+        tbody.innerHTML = "";
+
+        let grandTotal = 0;
+
+        result.data.forEach(item =>
+        {
+            grandTotal +=
+            Number(item.Total);
+
+            tbody.innerHTML +=
+            `
+            <tr>
+
+                <td>${item.ProductName}</td>
+
+                <td>${item.SKU}</td>
+
+                <td>${item.Quantity}</td>
+
+                <td>₨ ${Number(item.PurchasePrice).toFixed(2)}</td>
+
+                <td>₨ ${Number(item.Total).toFixed(2)}</td>
+
+            </tr>
+            `;
+        });
+
+        // document
+        // .getElementById("viewPurchaseID")
+        // .textContent =
+        // purchaseId;
+
+        console.log("viewPurchaseID:", document.getElementById("viewPurchaseID"));
+        console.log("viewSupplier:", document.getElementById("viewSupplier"));
+        console.log("viewPurchaseDate:", document.getElementById("viewPurchaseDate"));
+        console.log("purchaseGrandTotal:", document.getElementById("purchaseGrandTotal"));
+        console.log("purchaseGrandTotalBottom:", document.getElementById("purchaseGrandTotalBottom"));
+
+        document
+        .getElementById("viewPurchaseID")
+        .textContent =
+        purchaseId;
+
+        const purchase =
+        purchases.find(p =>
+        p.PurchaseID == purchaseId);
+
+        if(purchase)
+        {
+            document
+            .getElementById("viewSupplier")
+            .textContent =
+            purchase.SupplierName;
+
+            document
+            .getElementById("viewPurchaseDate")
+            .textContent =
+            new Date(
+            purchase.PurchaseDate)
+            .toLocaleString();
+        }
+
+        document
+        .getElementById("purchaseGrandTotal")
+        .textContent =
+        "₨ " +
+        grandTotal.toFixed(2);
+
+        document
+        .getElementById("purchaseGrandTotalBottom")
+        .textContent =
+        "₨ " +
+        grandTotal.toFixed(2);
+
+        document
+        .getElementById("viewPurchaseModal")
+        .style.display =
+        "block";
+    }
+    catch(error)
+        {
+            console.error(error);
+
+            alert(error.message);
+        }
+}
+
+/* ---------------- Statistics ---------------- */
+
+function updateStatistics()
+{
+    document
+    .getElementById("totalPurchases")
+    .textContent =
+    purchases.length;
+
+    let today = 0;
+
+    let total = 0;
+
+    const current =
+    new Date();
+
+    purchases.forEach(purchase =>
+    {
+        total +=
+        Number(
+        purchase.TotalAmount);
+
+        const date =
+        new Date(
+        purchase.PurchaseDate);
+
+        if(date.toDateString() ==
+        current.toDateString())
+        {
+            today++;
+        }
     });
 
+    document
+    .getElementById("todayPurchases")
+    .textContent =
+    today;
+
+    document
+    .getElementById("purchaseAmount")
+    .textContent =
+    "₨ " +
+    total.toFixed(2);
+}
+
+/* ---------------- Search ---------------- */
+
+function searchPurchases()
+{
+    const keyword =
+    document
+    .getElementById("searchBox")
+    .value
+    .toLowerCase();
+
+    const filtered =
+    purchases.filter(purchase =>
+        purchase.SupplierName
+        .toLowerCase()
+        .includes(keyword)
+    );
+
     renderPurchases(filtered);
-});
+}
 
-// ==============================
-// MODAL
-// ==============================
+/* ---------------- Purchase Modal ---------------- */
 
-newPurchaseButton.onclick =
-function()
+function openPurchaseModal()
 {
-    purchaseModal.style.display = "block";
-};
+    purchaseItems = [];
 
-closePurchaseModal.onclick =
-function()
-{
-    purchaseModal.style.display = "none";
-};
+    document
+    .getElementById("supplierSelect")
+    .innerHTML =
+    '<option value="">Select Supplier</option>';
 
-window.onclick =
-function(event)
-{
-    if(event.target === purchaseModal)
+    suppliers.forEach(supplier =>
     {
-        purchaseModal.style.display = "none";
+        document
+        .getElementById("supplierSelect")
+        .innerHTML +=
+        `
+        <option value="${supplier.SupplierID}">
+            ${supplier.CompanyName}
+        </option>
+        `;
+    });
+
+    document
+    .getElementById("purchaseNotes")
+    .value = "";
+
+    document
+    .getElementById("purchaseItemsBody")
+    .innerHTML = "";
+
+    document
+    .getElementById("grandTotal")
+    .textContent = "₨ 0.00";
+
+    addItemRow();
+
+    document
+    .getElementById("purchaseModal")
+    .style.display = "block";
+}
+
+function closePurchaseModal()
+{
+    document
+    .getElementById("purchaseModal")
+    .style.display = "none";
+}
+
+/* ---------------- Purchase Items ---------------- */
+
+function addItemRow()
+{
+    purchaseItems.push(
+    {
+        productId:0,
+        quantity:1,
+        purchasePrice:0
+    });
+
+    renderPurchaseItems();
+}
+
+function removeItem(index)
+{
+    purchaseItems.splice(index,1);
+
+    if(purchaseItems.length==0)
+    {
+        addItemRow();
+        return;
     }
+
+    renderPurchaseItems();
+}
+
+function renderPurchaseItems()
+{
+    const tbody =
+    document.getElementById(
+    "purchaseItemsBody");
+
+    tbody.innerHTML = "";
+
+    purchaseItems.forEach((item,index)=>
+    {
+        let options =
+        '<option value="">Select Product</option>';
+
+        products.forEach(product =>
+        {
+            options +=
+            `
+            <option
+            value="${product.ProductID}"
+            ${item.productId==product.ProductID?"selected":""}>
+
+                ${product.ProductName}
+
+            </option>
+            `;
+        });
+
+        tbody.innerHTML +=
+        `
+        <tr>
+
+            <td>
+
+                <select
+                onchange="changeProduct(${index},this.value)"
+                class="input">
+
+                    ${options}
+
+                </select>
+
+            </td>
+
+            <td>
+
+                <input
+                class="input"
+                type="number"
+                min="1"
+                value="${item.quantity}"
+                onchange="changeQuantity(${index},this.value)">
+
+            </td>
+
+            <td>
+
+                <input
+                class="input"
+                type="number"
+                min="0"
+                value="${item.purchasePrice}"
+                onchange="changePrice(${index},this.value)">
+
+            </td>
+
+            <td>
+
+                ₨
+                <span id="itemTotal${index}">
+
+                    0.00
+
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                class="btn-remove"
+                onclick="removeItem(${index})">
+
+                    Remove
+
+                </button>
+
+            </td>
+
+        </tr>
+        `;
+    });
+
+    calculateGrandTotal();
+}
+
+/* ---------------- Item Changes ---------------- */
+
+function changeProduct(index,value)
+{
+    purchaseItems[index].productId =
+    Number(value);
+
+    const product =
+    products.find(product =>
+    product.ProductID==
+    Number(value));
+
+    if(product)
+    {
+        purchaseItems[index].purchasePrice =
+        Number(product.PurchasePrice);
+    }
+
+    renderPurchaseItems();
+}
+
+function changeQuantity(index,value)
+{
+    purchaseItems[index].quantity =
+    Number(value);
+
+    renderPurchaseItems();
+}
+
+function changePrice(index,value)
+{
+    purchaseItems[index].purchasePrice =
+    Number(value);
+
+    renderPurchaseItems();
+}
+
+/* ---------------- Grand Total ---------------- */
+
+function calculateGrandTotal()
+{
+    let total = 0;
+
+    purchaseItems.forEach((item,index)=>
+    {
+        const rowTotal =
+        item.quantity *
+        item.purchasePrice;
+
+        total += rowTotal;
+
+        const span =
+        document.getElementById(
+        "itemTotal"+index);
+
+        if(span)
+        {
+            span.textContent =
+            rowTotal.toFixed(2);
+        }
+    });
+
+    document
+    .getElementById("grandTotal")
+    .textContent =
+    "₨ " +
+    total.toFixed(2);
+}
+
+/* ---------------- Save Purchase ---------------- */
+
+async function savePurchase()
+{
+    const supplierId =
+    Number(
+    document.getElementById(
+    "supplierSelect").value);
+
+    const notes =
+    document.getElementById(
+    "purchaseNotes").value.trim();
+
+    if(supplierId==0)
+    {
+        alert("Please select a supplier.");
+
+        return;
+    }
+
+    if(purchaseItems.length==0)
+    {
+        alert("Please add at least one product.");
+
+        return;
+    }
+
+    for(const item of purchaseItems)
+    {
+        if(item.productId==0)
+        {
+            alert("Please select a product.");
+
+            return;
+        }
+
+        if(item.quantity<=0)
+        {
+            alert("Quantity must be greater than zero.");
+
+            return;
+        }
+
+        if(item.purchasePrice<=0)
+        {
+            alert("Purchase price must be greater than zero.");
+
+            return;
+        }
+    }
+
+    try
+    {
+        const response =
+        await fetch(
+        "/api/purchases",
+        {
+            method:"POST",
+
+            headers:
+            {
+                "Content-Type":
+                "application/json"
+            },
+
+            body:
+            JSON.stringify(
+            {
+                supplierId:
+                supplierId,
+
+                notes:
+                notes,
+
+                items:
+                purchaseItems
+            })
+        });
+
+        const result =
+        await response.json();
+
+        alert(result.message);
+
+        if(result.success)
+        {
+            closePurchaseModal();
+
+            await loadPurchases();
+
+            purchaseItems=[];
+
+            document
+            .getElementById(
+            "purchaseItemsBody")
+            .innerHTML="";
+
+            document
+            .getElementById(
+            "grandTotal")
+            .textContent=
+            "₨ 0.00";
+        }
+    }
+    catch(error)
+    {
+        console.error(error);
+
+        alert("Unable to save purchase.");
+    }
+}
+
+document
+.getElementById("closeViewPurchaseModal")
+.onclick =
+function()
+{
+    document
+    .getElementById("viewPurchaseModal")
+    .style.display =
+    "none";
 };
 
-// ==============================
-// INITIALIZE PAGE
-// ==============================
-
-loadPurchases();
-
-loadSuppliers();
-
-loadProducts();
+document
+.getElementById("printPurchaseButton")
+.onclick =
+function()
+{
+    window.print();
+};

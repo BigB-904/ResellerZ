@@ -31,80 +31,83 @@ async function createSale(sale)
 
         let total = 0;
 
-        for(let item of sale.items)
-        {
-            const itemRequest =
-            new sql.Request(transaction);
-
-            itemRequest.input("SaleID", sql.Int, saleId);
-            itemRequest.input("ProductID", sql.Int, item.productId);
-            itemRequest.input("Quantity", sql.Int, item.quantity);
-            itemRequest.input("SalePrice", sql.Decimal(18,2), item.salePrice);
-
-            const stockCheck =
-            await itemRequest.query(`
-                SELECT Stock
-                FROM Products
-                WHERE ProductID = @ProductID
-            `);
-
-            if(stockCheck.recordset.length === 0)
+        for (let item of sale.items)
             {
-                throw new Error("Product not found");
+                const itemRequest =
+                new sql.Request(transaction);
+
+                itemRequest.input("SaleID", sql.Int, saleId);
+                itemRequest.input("ProductID", sql.Int, item.productId);
+                itemRequest.input("Quantity", sql.Int, item.quantity);
+                itemRequest.input("SalePrice", sql.Decimal(18,2), item.salePrice);
+
+                // 1. Check stock
+                const stockCheck = await itemRequest.query(`
+                    SELECT Stock
+                    FROM Products
+                    WHERE ProductID = @ProductID
+                `);
+
+                if (stockCheck.recordset.length === 0)
+                {
+                    throw new Error("Product not found");
+                }
+
+                const stock = stockCheck.recordset[0].Stock;
+
+                if (stock < item.quantity)
+                {
+                    throw new Error("Insufficient stock for ProductID " + item.productId);
+                }
+
+                // 2. Insert Sale Item
+                await itemRequest.query(`
+                    INSERT INTO SaleItems
+                    (
+                        SaleID,
+                        ProductID,
+                        Quantity,
+                        SalePrice
+                    )
+                    VALUES
+                    (
+                        @SaleID,
+                        @ProductID,
+                        @Quantity,
+                        @SalePrice
+                    )
+                `);
+
+                // 3. Reduce stock (ONLY ONCE)
+                await itemRequest.query(`
+                    UPDATE Products
+                    SET Stock = Stock - @Quantity
+                    WHERE ProductID = @ProductID
+                `);
+
+                // 4. Inventory log (ONLY ONCE)
+                await itemRequest.query(`
+                    INSERT INTO InventoryTransactions
+                    (
+                        ProductID,
+                        TransactionType,
+                        Quantity,
+                        ReferenceType,
+                        Notes
+                    )
+                    VALUES
+                    (
+                        @ProductID,
+                        'OUT',
+                        @Quantity,
+                        'Sale',
+                        'Stock reduced via sale'
+                    )
+                `);
+
+                // 5. Total calculation
+                total += item.quantity * item.salePrice;
             }
-
-            const currentStock =
-            stockCheck.recordset[0].Stock;
-
-            if(currentStock < item.quantity)
-            {
-                throw new Error("Insufficient stock for product ID " + item.productId);
-            }
-
-            await itemRequest.query(`
-                INSERT INTO SaleItems
-                (
-                    SaleID,
-                    ProductID,
-                    Quantity,
-                    SalePrice
-                )
-                VALUES
-                (
-                    @SaleID,
-                    @ProductID,
-                    @Quantity,
-                    @SalePrice
-                )
-            `);
-
-            await itemRequest.query(`
-                UPDATE Products
-                SET Stock = Stock - @Quantity
-                WHERE ProductID = @ProductID
-            `);
-
-            await itemRequest.query(`
-                INSERT INTO InventoryTransactions
-                (
-                    ProductID,
-                    TransactionType,
-                    Quantity,
-                    ReferenceType,
-                    Notes
-                )
-                VALUES
-                (
-                    @ProductID,
-                    'OUT',
-                    @Quantity,
-                    'Sale',
-                    'Stock reduced via sale'
-                )
-            `);
-
-            total += item.quantity * item.salePrice;
-        }
 
         await request.query(`
             UPDATE Sales
@@ -152,11 +155,6 @@ async function createSale(sale)
         throw error;
     }
 }
-
-module.exports =
-{
-    createSale
-};
 
 module.exports =
 {
