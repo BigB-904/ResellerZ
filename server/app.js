@@ -10,6 +10,8 @@ const supplierRoutes = require("./routes/supplierRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes");
 const saleRoutes = require("./routes/saleRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+
 
 
 const app = express();
@@ -20,7 +22,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-
+app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/products", productRoutes);
@@ -28,6 +30,7 @@ app.use("/api/suppliers", supplierRoutes);
 app.use("/api/inventory",inventoryRoutes);
 app.use("/api/purchases", purchaseRoutes);
 app.use("/api/sales", saleRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 app.get("/", (req, res) =>
 {

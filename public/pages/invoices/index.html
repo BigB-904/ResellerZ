@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ResellerZ | Invoice</title>
+
+<link rel="stylesheet" href="/css/base/global.css">
+<link rel="stylesheet" href="/css/pages/dashboard.css">
+<link rel="stylesheet" href="/css/pages/invoice.css">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <div class="logo">ResellerZ</div>
+
+        <nav>
+
+            <a href="/pages/dashboard/index.html">Dashboard</a>
+            <a href="/pages/customers/index.html">Customers</a>
+            <a href="/pages/products/index.html">Products</a>
+            <a href="/pages/inventory/index.html">Inventory</a>
+
+            <a href="/pages/purchases/index.html">Purchases</a>
+            <a href="/pages/sales/index.html">Sales</a>
+
+            <a class="active" href="/pages/invoices/index.html">Invoices</a>
+
+        </nav>
+
+    </aside>
+
+    <main class="content">
+
+        <header class="topbar">
+
+            <h2>Invoice</h2>
+
+            <button class="btn btn-primary" onclick="printInvoice()">
+                Print
+            </button>
+
+        </header>
+
+        <section class="invoice-container" id="invoiceContainer">
+
+            <div class="invoice-box">
+
+                <div class="invoice-header">
+
+                    <div>
+
+                        <h1>ResellerZ</h1>
+                        <p>Professional ERP System</p>
+
+                    </div>
+
+                    <div>
+
+                        <h2 id="invoiceNumber">INV</h2>
+                        <p id="invoiceDate"></p>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="invoice-info">
+
+                    <div>
+
+                        <h3>Customer</h3>
+                        <p id="customerName"></p>
+
+                    </div>
+
+                    <div>
+
+                        <h3>Invoice Details</h3>
+                        <p id="saleId"></p>
+
+                    </div>
+
+                </div>
+
+                <table class="invoice-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="invoiceItems"></tbody>
+
+                </table>
+
+                <div class="invoice-total">
+
+                    <h2>Total: ₨ <span id="totalAmount"></span></h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/js/pages/invoice.js"></script>
+
+</body>
+
+</html>
