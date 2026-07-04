@@ -277,3 +277,71 @@ CREATE TABLE Purchases
 
     FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
 );
+
+CREATE TABLE PurchaseItems
+(
+    PurchaseItemID INT IDENTITY(1,1) PRIMARY KEY,
+
+    PurchaseID INT NOT NULL,
+
+    ProductID INT NOT NULL,
+
+    Quantity INT NOT NULL,
+
+    PurchasePrice DECIMAL(18,2) NOT NULL,
+
+    LineTotal AS (Quantity * PurchasePrice),
+
+    FOREIGN KEY (PurchaseID) REFERENCES Purchases(PurchaseID),
+
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE Sales
+(
+    SaleID INT IDENTITY(1,1) PRIMARY KEY,
+
+    CustomerID INT NOT NULL,
+
+    SaleDate DATETIME DEFAULT GETDATE(),
+
+    TotalAmount DECIMAL(18,2) DEFAULT 0,
+
+    Notes NVARCHAR(255),
+
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+CREATE TABLE SaleItems
+(
+    SaleItemID INT IDENTITY(1,1) PRIMARY KEY,
+
+    SaleID INT NOT NULL,
+
+    ProductID INT NOT NULL,
+
+    Quantity INT NOT NULL,
+
+    SalePrice DECIMAL(18,2) NOT NULL,
+
+    LineTotal AS (Quantity * SalePrice),
+
+    FOREIGN KEY (SaleID) REFERENCES Sales(SaleID),
+
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+CREATE TABLE Invoices
+(
+    InvoiceID INT IDENTITY(1,1) PRIMARY KEY,
+
+    SaleID INT NOT NULL,
+
+    InvoiceNumber NVARCHAR(50),
+
+    InvoiceDate DATETIME DEFAULT GETDATE(),
+
+    TotalAmount DECIMAL(18,2),
+
+    FOREIGN KEY (SaleID) REFERENCES Sales(SaleID)
+);

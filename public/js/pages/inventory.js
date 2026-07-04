@@ -102,7 +102,7 @@ function renderInventory(data)
         else if(product.Stock<=product.MinimumStock)
         {
             status =
-            "<span class='status low-stock'>Low Stock</span>";
+            "<span class='status low-stock'>LS</span>";
         }
 
         tbody.innerHTML +=
