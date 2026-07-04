@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+
+ResellerZ | Purchases
+
+</title>
+
+<link
+rel="stylesheet"
+href="/css/base/global.css">
+
+<link
+rel="stylesheet"
+href="/css/pages/dashboard.css">
+
+<link
+rel="stylesheet"
+href="/css/pages/purchases.css">
+
+<link
+rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <div
+    id="sidebarContainer">
+
+    </div>
+
+    <main class="content">
+
+        <div
+        id="topbarContainer">
+
+        </div>
+
+        <section class="cards">
+
+            <div class="card">
+
+                <h3>
+
+                    Total Purchases
+
+                </h3>
+
+                <h1 id="totalPurchases">
+
+                    0
+
+                </h1>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+
+                    Today's Purchases
+
+                </h3>
+
+                <h1 id="todayPurchases">
+
+                    0
+
+                </h1>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+
+                    Purchase Amount
+
+                </h3>
+
+                <h1 id="purchaseAmount">
+
+                    ₨ 0
+
+                </h1>
+
+            </div>
+
+        </section>
+
+        <section
+        class="card"
+        style="margin-top:30px;">
+
+            <div class="toolbar">
+
+                <input
+                id="searchBox"
+                class="input"
+                placeholder="Search Purchase...">
+
+                <button
+                id="newPurchaseButton"
+                class="btn btn-primary">
+
+                    New Purchase
+
+                </button>
+
+            </div>
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Date</th>
+
+                        <th>Supplier</th>
+
+                        <th>Total</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                id="purchaseTableBody">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<div id="modalContainer"></div>
+
+<script src="/js/api.js"></script>
+
+<script src="/js/auth.js"></script>
+
+<script src="/js/components.js"></script>
+
+<script>
+
+initializePurchasePage();
+
+</script>
+
+<script src="/js/pages/purchases.js"></script>
+
+</body>
+
+</html>

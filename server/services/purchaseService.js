@@ -1,6 +1,11 @@
 const purchaseModel =
 require("../models/purchaseModel");
 
+async function getPurchases()
+{
+    return await purchaseModel.getPurchases();
+}
+
 async function createPurchase(data)
 {
     if(!data.supplierId)
@@ -18,5 +23,6 @@ async function createPurchase(data)
 
 module.exports =
 {
+    getPurchases,
     createPurchase
 };

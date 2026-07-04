@@ -5,14 +5,18 @@ async function createSale(req,res)
 {
     try
     {
-        const id =
+        const result =
         await saleService.createSale(req.body);
 
         res.json(
         {
             success:true,
             message:"Sale created successfully",
-            saleId:id
+            data:
+            {
+                saleId: result.saleId,
+                invoiceId: result.invoiceId
+            }
         });
     }
     catch(error)

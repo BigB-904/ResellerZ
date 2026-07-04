@@ -1,0 +1,105 @@
+.purchase-modal
+{
+    width: 900px;
+    max-width: 95%;
+}
+
+.purchase-modal h2
+{
+    margin-bottom: 20px;
+}
+
+.purchase-modal h3
+{
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.purchase-modal label
+{
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.purchase-modal .input
+{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.purchase-modal hr
+{
+    margin: 20px 0;
+}
+
+.purchase-modal .table
+{
+    width: 100%;
+    margin-top: 15px;
+}
+
+.purchase-modal .table th
+{
+    text-align: left;
+}
+
+.purchase-modal .table td
+{
+    vertical-align: middle;
+}
+
+.purchase-modal .btn
+{
+    margin-top: 10px;
+}
+
+.purchase-modal .modal-buttons
+{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+#grandTotal
+{
+    color: #0b8f43;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.delete-item-btn
+{
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.delete-item-btn:hover
+{
+    background: #b71c1c;
+}
+
+@media(max-width:900px)
+{
+    .purchase-modal
+    {
+        width: 98%;
+    }
+
+    .purchase-modal .table
+    {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .cards
+    {
+        grid-template-columns: repeat(1,1fr);
+    }
+}

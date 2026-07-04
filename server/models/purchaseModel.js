@@ -102,7 +102,36 @@ async function createPurchase(purchase)
     }
 }
 
+async function getPurchases()
+{
+    const result =
+    await sql.query(`
+        SELECT
+
+            p.PurchaseID,
+
+            p.PurchaseDate,
+
+            s.CompanyName AS SupplierName,
+
+            p.TotalAmount,
+
+            p.Notes
+
+        FROM Purchases p
+
+        INNER JOIN Suppliers s
+
+        ON p.SupplierID = s.SupplierID
+
+        ORDER BY p.PurchaseDate DESC
+    `);
+
+    return result.recordset;
+}
+
 module.exports =
 {
+    getPurchases,
     createPurchase
 };

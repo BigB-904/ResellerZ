@@ -1,6 +1,9 @@
 const sql =
 require("mssql");
 
+const invoiceModel =
+require("./invoiceModel");
+
 async function createSale(sale)
 {
     const transaction =
@@ -109,9 +112,39 @@ async function createSale(sale)
             WHERE SaleID = ${saleId}
         `);
 
+        // =========================
+        // AUTO INVOICE CREATION
+        // =========================
+
+        const invoiceNumber =
+        "INV-" + Date.now();
+
+        const invoiceResult =
+        await request.query(`
+            INSERT INTO Invoices
+            (
+                SaleID,
+                InvoiceNumber,
+                TotalAmount
+            )
+            OUTPUT INSERTED.InvoiceID
+            VALUES
+            (
+                ${saleId},
+                '${invoiceNumber}',
+                ${total}
+            )
+        `);
+
+        const invoiceId =
+        invoiceResult.recordset[0].InvoiceID;
+
         await transaction.commit();
 
-        return saleId;
+        return {
+            saleId,
+            invoiceId
+        };
     }
     catch(error)
     {
@@ -119,6 +152,11 @@ async function createSale(sale)
         throw error;
     }
 }
+
+module.exports =
+{
+    createSale
+};
 
 module.exports =
 {
