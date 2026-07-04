@@ -1,0 +1,32 @@
+.content{
+
+    padding:30px;
+
+    flex:1;
+}
+
+.card{
+
+    margin-bottom:20px;
+}
+
+.table td{
+
+    vertical-align:middle;
+}
+
+.action-buttons{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.btn-small{
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    font-size:14px;
+}

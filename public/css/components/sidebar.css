@@ -1,0 +1,43 @@
+.sidebar{
+
+    width:260px;
+
+    background:var(--sidebar);
+
+    color:white;
+
+    min-height:100vh;
+}
+
+.logo{
+
+    padding:30px;
+
+    font-size:28px;
+
+    font-weight:bold;
+}
+
+.sidebar nav{
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.sidebar a{
+
+    padding:15px 30px;
+
+    transition:.3s;
+}
+
+.sidebar a:hover{
+
+    background:var(--sidebar-hover);
+}
+
+.sidebar .active{
+
+    background:var(--primary);
+}

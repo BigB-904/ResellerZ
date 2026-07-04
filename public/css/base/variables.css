@@ -1,0 +1,42 @@
+:root{
+
+    /* Brand */
+
+    --primary:#2563EB;
+    --primary-hover:#1D4ED8;
+
+    /* Sidebar */
+
+    --sidebar:#0F172A;
+    --sidebar-hover:#1E293B;
+
+    /* Background */
+
+    --background:#F8FAFC;
+    --surface:#FFFFFF;
+
+    /* Text */
+
+    --text:#1F2937;
+    --text-light:#6B7280;
+
+    /* Border */
+
+    --border:#E5E7EB;
+
+    /* Status */
+
+    --success:#22C55E;
+    --danger:#EF4444;
+    --warning:#F59E0B;
+
+    /* Radius */
+
+    --radius:12px;
+
+    /* Shadow */
+
+    --shadow:
+    0 10px 25px rgba(0,0,0,.08);
+
+}
