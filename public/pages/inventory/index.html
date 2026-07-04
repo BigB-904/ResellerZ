@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+
+ResellerZ | Inventory
+
+</title>
+
+<link
+rel="stylesheet"
+href="/css/base/global.css">
+
+<link
+rel="stylesheet"
+href="/css/pages/dashboard.css">
+
+<link
+rel="stylesheet"
+href="/css/pages/inventory.css">
+
+<link
+rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            ResellerZ
+
+        </div>
+
+        <nav>
+
+            <a href="/pages/dashboard/index.html">
+
+                Dashboard
+
+            </a>
+
+            <a href="/pages/customers/index.html">
+
+                Customers
+
+            </a>
+
+            <a href="/pages/products/index.html">
+
+                Products
+
+            </a>
+
+            <a href="/pages/suppliers/index.html">
+
+                Suppliers
+
+            </a>
+
+            <a
+            class="active"
+            href="/pages/inventory/index.html">
+
+                Inventory
+
+            </a>
+
+            <a>
+
+                Purchases
+
+            </a>
+
+            <a>
+
+                Sales
+
+            </a>
+
+            <a>
+
+                Reports
+
+            </a>
+
+            <a>
+
+                Users
+
+            </a>
+
+            <a>
+
+                Settings
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="content">
+
+        <header class="topbar">
+
+            <h2>
+
+                Inventory
+
+            </h2>
+
+            <button
+            class="btn btn-primary"
+            onclick="logout()">
+
+                Logout
+
+            </button>
+
+        </header>
+
+        <section class="cards">
+
+            <div class="card">
+
+                <h3>
+
+                    Total Products
+
+                </h3>
+
+                <h1 id="totalProducts">
+
+                    0
+
+                </h1>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+
+                    Total Stock
+
+                </h3>
+
+                <h1 id="totalStock">
+
+                    0
+
+                </h1>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+
+                    Low Stock
+
+                </h3>
+
+                <h1 id="lowStock">
+
+                    0
+
+                </h1>
+
+            </div>
+
+            <div class="card">
+
+                <h3>
+
+                    Out Of Stock
+
+                </h3>
+
+                <h1 id="outOfStock">
+
+                    0
+
+                </h1>
+
+            </div>
+
+        </section>
+
+        <section
+        class="card"
+        style="margin-top:30px;">
+
+            <div class="toolbar">
+
+                <input
+                id="searchBox"
+                class="input"
+                placeholder="Search product...">
+
+            </div>
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Product</th>
+
+                        <th>SKU</th>
+
+                        <th>Category</th>
+
+                        <th>Stock</th>
+
+                        <th>Minimum</th>
+
+                        <th>Status</th>
+
+                        <th>Purchase</th>
+
+                        <th>Sale</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                id="inventoryTableBody">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- Stock Modal -->
+
+<div
+id="stockModal"
+class="modal">
+
+    <div class="modal-content">
+
+        <h2
+        id="modalTitle">
+
+            Stock
+
+        </h2>
+
+        <div class="product-info">
+
+            <p>
+
+                <strong>Product :</strong>
+
+                <span id="modalProductName">
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>SKU :</strong>
+
+                <span id="modalSKU">
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Current Stock :</strong>
+
+                <span id="modalCurrentStock">
+
+                </span>
+
+            </p>
+
+        </div>
+
+        <label>
+
+            Quantity
+
+        </label>
+
+        <input
+        id="quantity"
+        class="input"
+        type="number"
+        min="1">
+
+        <label>
+
+            Notes
+
+        </label>
+
+        <textarea
+        id="notes"
+        class="input"></textarea>
+
+        <div class="modal-buttons">
+
+            <button
+            id="saveStock"
+            class="btn btn-primary">
+
+                Save
+
+            </button>
+
+            <button
+            id="closeStockModal"
+            class="btn">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Transaction History Modal -->
+
+<div
+id="historyModal"
+class="modal">
+
+    <div
+    class="modal-content"
+    style="width:900px;max-width:95%;">
+
+        <h2>
+
+            Inventory History
+
+        </h2>
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Date</th>
+
+                    <th>Type</th>
+
+                    <th>Quantity</th>
+
+                    <th>Reference</th>
+
+                    <th>Notes</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody
+            id="historyTableBody">
+
+            </tbody>
+
+        </table>
+
+        <div class="modal-buttons">
+
+            <button
+            id="closeHistoryModal"
+            class="btn">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+
+<script src="/js/auth.js"></script>
+
+<script src="/js/pages/inventory.js"></script>
+
+</body>
+
+</html>

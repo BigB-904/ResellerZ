@@ -1,27 +1,31 @@
 const express =
-require("express");
+    require("express");
 
 const router =
-express.Router();
+    express.Router();
 
 const inventoryController =
-require("../controllers/inventoryController");
+    require("../controllers/inventoryController");
 
 router.get(
-"/",
-inventoryController.getInventory);
+    "/",
+    inventoryController.getInventory);
 
 router.get(
-"/transactions/:id",
-inventoryController.getTransactions);
+    "/stats",
+    inventoryController.getInventoryStats);
+
+router.get(
+    "/transactions/:id",
+    inventoryController.getTransactions);
 
 router.post(
-"/stockin",
-inventoryController.stockIn);
+    "/stockin",
+    inventoryController.stockIn);
 
 router.post(
-"/stockout",
-inventoryController.stockOut);
+    "/stockout",
+    inventoryController.stockOut);
 
 module.exports =
-router;
+    router;

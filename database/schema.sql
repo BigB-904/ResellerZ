@@ -254,3 +254,26 @@ ADD
 
 Unit NVARCHAR(20) NOT NULL
 DEFAULT 'PCS';
+
+ALTER TABLE Products
+
+ADD
+
+IsActive BIT NOT NULL
+DEFAULT 1;
+
+
+CREATE TABLE Purchases
+(
+    PurchaseID INT IDENTITY(1,1) PRIMARY KEY,
+
+    SupplierID INT NOT NULL,
+
+    PurchaseDate DATETIME DEFAULT GETDATE(),
+
+    TotalAmount DECIMAL(18,2) DEFAULT 0,
+
+    Notes NVARCHAR(255),
+
+    FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
+);

@@ -26,6 +26,31 @@ async function getInventory(req,res)
     }
 }
 
+async function getInventoryStats(req,res)
+{
+    try
+    {
+        const data =
+        await inventoryService.getInventoryStats();
+
+        res.json(
+        {
+            success:true,
+            data:data
+        });
+    }
+    catch(error)
+    {
+        console.error(error);
+
+        res.status(500).json(
+        {
+            success:false,
+            message:"Server Error"
+        });
+    }
+}
+
 async function getTransactions(req,res)
 {
     try
@@ -61,17 +86,17 @@ async function stockIn(req,res)
         res.json(
         {
             success:true,
-            message:"Stock updated."
+            message:"Stock added successfully."
         });
     }
     catch(error)
     {
         console.error(error);
 
-        res.status(500).json(
+        res.status(400).json(
         {
             success:false,
-            message:"Server Error"
+            message:error.message
         });
     }
 }
@@ -85,17 +110,17 @@ async function stockOut(req,res)
         res.json(
         {
             success:true,
-            message:"Stock updated."
+            message:"Stock removed successfully."
         });
     }
     catch(error)
     {
         console.error(error);
 
-        res.status(500).json(
+        res.status(400).json(
         {
             success:false,
-            message:"Server Error"
+            message:error.message
         });
     }
 }
@@ -103,6 +128,7 @@ async function stockOut(req,res)
 module.exports =
 {
     getInventory,
+    getInventoryStats,
     getTransactions,
     stockIn,
     stockOut

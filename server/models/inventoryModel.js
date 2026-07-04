@@ -31,6 +31,51 @@ async function getInventory()
     return result.recordset;
 }
 
+async function getInventoryStats()
+{
+    const result =
+    await sql.query(`
+    SELECT
+
+    COUNT(*) AS TotalProducts,
+
+    ISNULL(SUM(Stock),0) AS TotalStock,
+
+    SUM
+    (
+        CASE
+
+        WHEN Stock<=MinimumStock
+        AND Stock>0
+
+        THEN 1
+
+        ELSE 0
+
+        END
+    )
+    AS LowStock,
+
+    SUM
+    (
+        CASE
+
+        WHEN Stock=0
+
+        THEN 1
+
+        ELSE 0
+
+        END
+    )
+    AS OutOfStock
+
+    FROM Products
+    `);
+
+    return result.recordset[0];
+}
+
 async function getTransactions(productId)
 {
     const request =
@@ -57,111 +102,167 @@ async function getTransactions(productId)
 
 async function stockIn(product)
 {
-    const request =
-    new sql.Request();
+    const transaction =
+    new sql.Transaction();
 
-    request.input(
-    "ProductID",
-    sql.Int,
-    product.productId);
+    try
+    {
+        await transaction.begin();
 
-    request.input(
-    "Quantity",
-    sql.Int,
-    product.quantity);
+        const request =
+        new sql.Request(transaction);
 
-    request.input(
-    "Notes",
-    sql.NVarChar(255),
-    product.notes);
+        request.input(
+        "ProductID",
+        sql.Int,
+        product.productId);
 
-    await request.query(`
+        request.input(
+        "Quantity",
+        sql.Int,
+        product.quantity);
 
-    UPDATE Products
+        request.input(
+        "Notes",
+        sql.NVarChar(255),
+        product.notes);
 
-    SET
+        await request.query(`
 
-    Stock =
-    Stock + @Quantity
+        UPDATE Products
 
-    WHERE ProductID=@ProductID
+        SET Stock = Stock + @Quantity
 
-    INSERT INTO InventoryTransactions
-    (
-    ProductID,
-    TransactionType,
-    Quantity,
-    ReferenceType,
-    Notes
-    )
+        WHERE ProductID = @ProductID
 
-    VALUES
-    (
-    @ProductID,
-    'IN',
-    @Quantity,
-    'Manual',
-    @Notes
-    )
+        `);
 
-    `);
+        await request.query(`
+
+        INSERT INTO InventoryTransactions
+        (
+            ProductID,
+            TransactionType,
+            Quantity,
+            ReferenceType,
+            Notes
+        )
+
+        VALUES
+        (
+            @ProductID,
+            'IN',
+            @Quantity,
+            'Manual',
+            @Notes
+        )
+
+        `);
+
+        await transaction.commit();
+    }
+    catch(error)
+    {
+        await transaction.rollback();
+
+        throw error;
+    }
 }
 
 async function stockOut(product)
 {
-    const request =
-    new sql.Request();
+    const transaction =
+    new sql.Transaction();
 
-    request.input(
-    "ProductID",
-    sql.Int,
-    product.productId);
+    try
+    {
+        await transaction.begin();
 
-    request.input(
-    "Quantity",
-    sql.Int,
-    product.quantity);
+        const request =
+        new sql.Request(transaction);
 
-    request.input(
-    "Notes",
-    sql.NVarChar(255),
-    product.notes);
+        request.input(
+        "ProductID",
+        sql.Int,
+        product.productId);
 
-    await request.query(`
+        request.input(
+        "Quantity",
+        sql.Int,
+        product.quantity);
 
-    UPDATE Products
+        request.input(
+        "Notes",
+        sql.NVarChar(255),
+        product.notes);
 
-    SET
+        const stockResult =
+        await request.query(`
+        SELECT Stock
 
-    Stock =
-    Stock - @Quantity
+        FROM Products
 
-    WHERE ProductID=@ProductID
+        WHERE ProductID=@ProductID
+        `);
 
-    INSERT INTO InventoryTransactions
-    (
-    ProductID,
-    TransactionType,
-    Quantity,
-    ReferenceType,
-    Notes
-    )
+        if(stockResult.recordset.length===0)
+        {
+            throw new Error("Product not found.");
+        }
 
-    VALUES
-    (
-    @ProductID,
-    'OUT',
-    @Quantity,
-    'Manual',
-    @Notes
-    )
+        const currentStock =
+        stockResult.recordset[0].Stock;
 
-    `);
+        if(currentStock<product.quantity)
+        {
+            throw new Error("Insufficient stock.");
+        }
+
+        await request.query(`
+        UPDATE Products
+
+        SET Stock=Stock-@Quantity
+
+        WHERE ProductID=@ProductID
+        `);
+
+        await request.query(`
+        INSERT INTO InventoryTransactions
+        (
+            ProductID,
+            TransactionType,
+            Quantity,
+            ReferenceType,
+            Notes
+        )
+
+        VALUES
+        (
+            @ProductID,
+            'OUT',
+            @Quantity,
+            'Manual',
+            @Notes
+        )
+        `);
+
+        await transaction.commit();
+    }
+    catch(error)
+    {
+        if(transaction._aborted===false)
+        {
+            await transaction.rollback();
+        }
+
+        throw error;
+    }
 }
 
 module.exports =
 {
     getInventory,
+    getInventoryStats,
     getTransactions,
     stockIn,
     stockOut
